@@ -13,7 +13,7 @@ jobs:
         env:
           LDFLAGS: "-L$(brew --prefix gettext)/lib"
           CPPFLAGS: "-I$(brew --prefix gettext)/include"
-          PV_VERSION: "1.8.5"
+          PV_VERSION: "1.10.5"
         run: |
           curl -LO https://www.ivarch.com/programs/sources/pv-${PV_VERSION}.tar.gz
           tar xzf pv-${PV_VERSION}.tar.gz
