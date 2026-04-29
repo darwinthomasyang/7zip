@@ -1,4 +1,3 @@
-  
 name: Build pv (macOS ARM64) from official source
 
 on: [push]
@@ -14,7 +13,7 @@ jobs:
         env:
           LDFLAGS: "-L$(brew --prefix gettext)/lib"
           CPPFLAGS: "-I$(brew --prefix gettext)/include"
-          PV_VERSION: "1.8.15"
+          PV_VERSION: "1.8.5"               # ← correct stable version
         run: |
           curl -LO https://github.com/a-j-wood/pv/releases/download/v${PV_VERSION}/pv-${PV_VERSION}.tar.gz
           tar xzf pv-${PV_VERSION}.tar.gz
