@@ -1,23 +1,28 @@
-name: Build pv (macOS ARM64) from official source
+name: Build pv (macOS ARM64) from Codeberg
 
-on: [push]
+on: [push]                      # 您可改为 workflow_dispatch 等触发方式
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-latest       # Apple Silicon runner
     steps:
       - name: Install build dependencies
-        run: brew install gettext
+        run: |
+          brew install autoconf automake libtool gettext
 
-      - name: Download and build pv
+      - name: Clone pv from Codeberg
+        run: |
+          git clone https://codeberg.org/a-j-wood/pv.git pv-src
+          cd pv-src
+          git checkout v1.8.5    # 可选：指定稳定版本标签，不写则用 main 分支
+
+      - name: Build pv
         env:
           LDFLAGS: "-L$(brew --prefix gettext)/lib"
           CPPFLAGS: "-I$(brew --prefix gettext)/include"
-          PV_VERSION: "1.8.5"               # ← correct stable version
         run: |
-          curl -LO https://github.com/a-j-wood/pv/releases/download/v${PV_VERSION}/pv-${PV_VERSION}.tar.gz
-          tar xzf pv-${PV_VERSION}.tar.gz
-          cd pv-${PV_VERSION}
+          cd pv-src
+          bash generate.sh
           ./configure --prefix=/usr/local
           make -j$(sysctl -n hw.logicalcpu)
           mkdir -p ../output
