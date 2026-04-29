@@ -1,0 +1,37 @@
+name: Build pv (macOS ARM64) from official source
+
+on: [push]    # 每当本仓库有推送时触发
+
+jobs:
+  build:
+    runs-on: macos-latest   # Apple Silicon (ARM64) 运行器
+    steps:
+      - name: Checkout pv source from Andrew Wood's repo
+        uses: actions/checkout@v4
+        with:
+          repository: a-j-wood/pv
+          path: pv-src        # 放入子目录避免与本仓库文件冲突
+
+      - name: Install build dependencies
+        run: brew install autoconf automake libtool gettext
+
+      - name: Build pv
+        run: |
+          cd pv-src
+          # 生成 configure 脚本（若不存在）
+          if [ ! -f configure ]; then
+            autoreconf -i
+          fi
+          ./configure
+          make -j$(sysctl -n hw.logicalcpu)
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p output
+          cp pv-src/pv output/
+
+      - name: Upload pv binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: pv-macos-arm64
+          path: output/pv
